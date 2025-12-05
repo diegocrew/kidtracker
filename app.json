@@ -1,12 +1,40 @@
 {
   "expo": {
+    "name": "KidCare",
+    "slug": "kidcare-tracker",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTabletMode": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.diegocrew.kidcaretracker"
+    },
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": []
+        }
+      ]
+    ],
     "extra": {
       "eas": {
         "projectId": "c78d2ab8-4254-4471-915a-1803e185dbb3"
       }
-    },
-    "android": {
-      "package": "com.diegocrew.kidcaretracker"
     }
   }
 }

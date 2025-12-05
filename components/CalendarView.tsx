@@ -1,5 +1,5 @@
-
 import React, { useState, useMemo } from 'react';
+import { View, Text, TouchableOpacity, FlatList, ScrollView } from 'react-native';
 import { DailyLog } from '../types';
 import { ChevronLeftIcon, ChevronRightIcon } from './Icons';
 import { toLocalISOString } from '../utils';
@@ -27,11 +27,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({ logs, onDateSelect, selecte
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
 
-  // Helper to determine if a day counts as "Sick"
   const isSickDay = (dateStr: string) => {
     const log = logs[dateStr];
     if (!log) return false;
-    // Considered sick if symptoms recorded or temperature recorded
     return (log.symptoms && log.symptoms.length > 0) || (log.temperatures && log.temperatures.length > 0);
   };
 
@@ -40,12 +38,10 @@ const CalendarView: React.FC<CalendarViewProps> = ({ logs, onDateSelect, selecte
     const startDay = firstDayOfMonth(currentDate);
     const daysArray = [];
 
-    // Empty cells for days before the 1st
     for (let i = 0; i < startDay; i++) {
       daysArray.push(null);
     }
 
-    // Days of the month
     for (let i = 1; i <= totalDays; i++) {
       daysArray.push(i);
     }
@@ -53,83 +49,83 @@ const CalendarView: React.FC<CalendarViewProps> = ({ logs, onDateSelect, selecte
   }, [currentDate]);
 
   const getStatusColor = (day: number) => {
-    // Construct local date string manually to avoid UTC shifts
     const year = currentDate.getFullYear();
     const month = String(currentDate.getMonth() + 1).padStart(2, '0');
     const dayStr = String(day).padStart(2, '0');
     const dateStr = `${year}-${month}-${dayStr}`;
     
-    // Check if today is sick
-    if (!isSickDay(dateStr)) return 'bg-white text-slate-700';
+    if (!isSickDay(dateStr)) return { bg: '#FFFFFF', text: '#475569' };
 
-    // Check previous day to determine if "Started" or "Ongoing"
-    // Calculate previous day date string safely
     const prevDateObj = new Date(year, currentDate.getMonth(), day - 1);
     const prevDateStr = toLocalISOString(prevDateObj);
-
     const wasSickYesterday = isSickDay(prevDateStr);
 
     if (wasSickYesterday) {
-        return 'bg-orange-400 text-white shadow-md shadow-orange-200'; // Ongoing
+      return { bg: '#FB923C', text: '#FFFFFF' };
     } else {
-        return 'bg-red-500 text-white shadow-md shadow-red-200'; // Started
+      return { bg: '#EF4444', text: '#FFFFFF' };
     }
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4">
+    <View style={{ backgroundColor: '#FFFFFF', borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0', padding: 16, marginBottom: 24 }}>
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold text-slate-800">{monthName} <span className="text-slate-400 font-normal">{year}</span></h2>
-        <div className="flex gap-2">
-          <button onClick={handlePrevMonth} className="p-2 hover:bg-slate-50 rounded-full text-slate-500 transition-colors">
-            <ChevronLeftIcon className="w-5 h-5" />
-          </button>
-          <button onClick={handleNextMonth} className="p-2 hover:bg-slate-50 rounded-full text-slate-500 transition-colors">
-            <ChevronRightIcon className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+        <Text style={{ fontSize: 18, fontWeight: '700', color: '#1E293B' }}>
+          {monthName} <Text style={{ color: '#94A3B8', fontWeight: '400' }}>{year}</Text>
+        </Text>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <TouchableOpacity onPress={handlePrevMonth} style={{ padding: 8 }}>
+            <ChevronLeftIcon size={20} color="#64748B" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleNextMonth} style={{ padding: 8 }}>
+            <ChevronRightIcon size={20} color="#64748B" />
+          </TouchableOpacity>
+        </View>
+      </View>
 
       {/* Days Header */}
-      <div className="grid grid-cols-7 mb-2">
+      <View style={{ flexDirection: 'row', marginBottom: 8 }}>
         {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
-          <div key={i} className="text-center text-xs font-semibold text-slate-400 uppercase">
-            {d}
-          </div>
+          <View key={i} style={{ flex: 1, alignItems: 'center' }}>
+            <Text style={{ fontSize: 12, fontWeight: '600', color: '#94A3B8', textTransform: 'uppercase' }}>{d}</Text>
+          </View>
         ))}
-      </div>
+      </View>
 
       {/* Grid */}
-      <div className="grid grid-cols-7 gap-y-2 gap-x-1">
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
         {days.map((day, index) => {
-          if (day === null) return <div key={`empty-${index}`} />;
+          if (day === null) return <View key={`empty-${index}`} style={{ width: '14.28%', height: 40 }} />;
           
-          // Construct date key consistent with getStatusColor
           const m = String(currentDate.getMonth() + 1).padStart(2, '0');
           const d = String(day).padStart(2, '0');
           const dateStr = `${currentDate.getFullYear()}-${m}-${d}`;
           
           const isSelected = selectedDate === dateStr;
-          const statusClass = getStatusColor(day);
+          const colors = getStatusColor(day);
           
           return (
-            <button
+            <TouchableOpacity
               key={day}
-              onClick={() => onDateSelect(dateStr)}
-              className={`
-                h-10 w-10 md:h-12 md:w-12 mx-auto flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-200
-                ${statusClass}
-                ${isSelected ? 'ring-2 ring-blue-500 ring-offset-2 scale-105' : ''}
-                hover:scale-105 active:scale-95
-              `}
+              onPress={() => onDateSelect(dateStr)}
+              style={{
+                width: '14.28%',
+                aspectRatio: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: colors.bg,
+                borderRadius: 12,
+                borderWidth: isSelected ? 2 : 0,
+                borderColor: isSelected ? '#3B82F6' : 'transparent',
+              }}
             >
-              {day}
-            </button>
+              <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text }}>{day}</Text>
+            </TouchableOpacity>
           );
         })}
-      </div>
-    </div>
+      </View>
+    </View>
   );
 };
 

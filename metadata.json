@@ -1,0 +1,5 @@
+{
+  "name": "KidCare Tracker",
+  "description": "A mobile-first health tracking app for parents to monitor sickness duration, symptoms, and medications. Features a smart calendar, health statistics, and AI-powered health insights.",
+  "requestFramePermissions": []
+}

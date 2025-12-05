@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "c78d2ab8-4254-4471-915a-1803e185dbb3"
+      }
+    },
+    "android": {
+      "package": "com.diegocrew.kidcaretracker"
+    }
+  }
+}

@@ -260,26 +260,24 @@ function App() {
       </View>
 
       {/* Modals */}
-      <Modal visible={showLogSheet} animationType="slide" transparent>
-        {showLogSheet && selectedDate && (
-          <LogSheet
-            date={selectedDate}
-            existingLog={currentLogs[selectedDate]}
-            onSave={handleSaveLog}
-            onClose={() => setShowLogSheet(false)}
-            onDelete={handleDeleteLog}
-          />
-        )}
+      <Modal visible={showLogSheet} animationType="slide" transparent={false}>
+        <LogSheet
+          date={selectedDate || ''}
+          existingLog={selectedDate ? currentLogs[selectedDate] : undefined}
+          onSave={handleSaveLog}
+          onClose={() => setShowLogSheet(false)}
+          onDelete={handleDeleteLog}
+          visible={showLogSheet}
+        />
       </Modal>
 
       <Modal visible={showProfileEditor} animationType="fade" transparent>
-        {showProfileEditor && (
-          <ProfileEditor
-            profile={currentProfile}
-            onSave={handleUpdateProfile}
-            onClose={() => setShowProfileEditor(false)}
-          />
-        )}
+        <ProfileEditor
+          profile={currentProfile}
+          onSave={handleUpdateProfile}
+          onClose={() => setShowProfileEditor(false)}
+          visible={showProfileEditor}
+        />
       </Modal>
     </SafeAreaView>
   );
